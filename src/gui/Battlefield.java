@@ -10,6 +10,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.BorderFactory;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
@@ -25,35 +26,41 @@ public class Battlefield extends javax.swing.JFrame {
      * Creates new form Battlefield
      */
     public Battlefield() {
+        int WIDTH = this.getWidth();
+        int HEIGHT = this.getHeight();
+        
+        this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        
         initComponents();
         this.setLayout(new GridBagLayout());
         
         this.setLocationRelativeTo(null);
-        
-        Border border = BorderFactory.createCompoundBorder();
         GridBagConstraints cons = new GridBagConstraints();
         
+        
+        
         cons.fill = GridBagConstraints.BOTH;
-        cons.insets = new Insets(10, 10, 10, 10);
         
         cons.ipadx = 50;
         cons.ipady = 50;
         
-        cons.weightx = 1;
-        cons.weighty = 1;
+        cons.weightx = 100;
+        cons.weighty = 100;
         for(int i = 0; i < LINES; i++) {
             cons.gridx = i;
             for(int j = 0; j < COLUMNS; j++) {
                 cons.gridy = j;
                 
-                JPanel panel = new JPanel(new GridBagLayout());                                
+                JPanel panel = new JPanel(new GridBagLayout());
+                
                 panel.setBackground(Color.black);
-                panel.setBorder(border);
-                panel.setSize(50, 50);
+//                panel.setBorder(border);
+                panel.setSize(WIDTH / COLUMNS, HEIGHT / LINES);
                 
                 this.add(panel, cons);
+                panel.revalidate();
             }
-        }        
+        }
     }
 
     /**
