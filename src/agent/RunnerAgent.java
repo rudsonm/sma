@@ -5,8 +5,11 @@
  */
 package agent;
 
+import gui.Battlefield;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.lang.acl.ACLMessage;
 import java.awt.Color;
 
 /**
@@ -15,15 +18,36 @@ import java.awt.Color;
  */
 public class RunnerAgent extends Agent {
     public Color cor;
+    Battlefield battlefield;
     
-    public RunnerAgent(Color cor) {
+    private String nextMove = null;
+    
+    public RunnerAgent(Battlefield battlefield, Color cor) {
         this.cor = cor;
-        
-        addBehaviour(new CyclicBehaviour(this) {
+        this.battlefield = battlefield;        
+    }
+
+    @Override
+    protected void setup() {
+        addBehaviour(new CyclicBehaviour() {
             @Override
             public void action() {
-                
+                ACLMessage message = RunnerAgent.this.receive();
+                if(message != null) {                    
+                    // recebe mensagem de atualizacao
+                }
+                ACLMessage reply = message.createReply();
+                reply.addReceiver(new AID("Commander", AID.ISLOCALNAME));
+                reply.setOntology("Action");
+                reply.setContent(
+                    RunnerAgent.this.getNextMove()
+                );
+                RunnerAgent.this.send(message);
             }
         });
+    }
+    
+    private String getNextMove() {
+        return "R";
     }
 }

@@ -5,6 +5,7 @@
  */
 package gui;
 
+import jade.core.AID;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -37,8 +38,6 @@ public class Battlefield extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         GridBagConstraints cons = new GridBagConstraints();
         
-        
-        
         cons.fill = GridBagConstraints.BOTH;
         
         cons.ipadx = 50;
@@ -54,13 +53,16 @@ public class Battlefield extends javax.swing.JFrame {
                 JPanel panel = new JPanel(new GridBagLayout());
                 
                 panel.setBackground(Color.black);
-//                panel.setBorder(border);
                 panel.setSize(WIDTH / COLUMNS, HEIGHT / LINES);
                 
                 this.add(panel, cons);
                 panel.revalidate();
             }
         }
+    }
+    
+    private void moveAgent(AID agent, String move) {
+        
     }
 
     /**
