@@ -8,10 +8,15 @@ public class Starter {
     public static void main(String[] args) throws ControllerException, InterruptedException {
         Runtime rt = Runtime.instance();
         ProfileImpl p = new ProfileImpl();
+        
         ContainerController cc = rt.createMainContainer(p);
         AgentController ac = cc.createNewAgent("Tirulipa", "MyBeautifulAgent", args);
         AgentController a2 = cc.createNewAgent("Rudini", "MyBeautifulAgent", args);
         cc.createNewAgent("Mariscleide", "MyBeautifulAgent", args).start();
+        
+        // inicia JADE Remote Agent Management GUI
+        cc.createNewAgent("rma", "jade.tools.rma.rma", null).start();
+        
         a2.start();
         ac.start();
         a2.kill();
