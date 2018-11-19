@@ -1,22 +1,25 @@
+package agent;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package agent;
 
+
+import core.Starter;
+import core.Starter;
 import gui.Battlefield;
+import gui.GroundPanel;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-import java.io.Serializable;
-import javax.swing.JFrame;
+import java.awt.Color;
+import java.awt.Point;
+import java.util.HashMap;
 
 /**
  *
@@ -26,11 +29,8 @@ public class CommanderAgent extends Agent {
 
     private final int INTERVAL = 1000;
     
-    private Battlefield battlefield;
-    
-    public CommanderAgent(Battlefield battlefield) {
-        this.battlefield = battlefield;
-    }
+    private HashMap<String, Point> playersPositions;
+    private HashMap<String, Color> playersColors;
     
     @Override
     protected void setup() {
@@ -39,11 +39,9 @@ public class CommanderAgent extends Agent {
             public void action() {
                 ServiceDescription sd = new ServiceDescription();
                 sd.setType("Action");
-                
             }
         });
     }
-    
     
     protected void getActions(final ServiceDescription sd) {
         this.addBehaviour(new TickerBehaviour(this, INTERVAL) {
@@ -55,7 +53,31 @@ public class CommanderAgent extends Agent {
                     return;
                 
                 AID sender = message.getSender();
-                String direction = message.getContent();                               
+                String senderName = sender.getLocalName();
+                String direction = message.getContent();
+                
+                Point point = playersPositions.get(senderName);
+                GroundPanel panel = (GroundPanel) Starter.BATTLEFIELD.getComponentAt(point);
+                panel.setWallAgent(new AssassinStaticWall(panel));
+                
+                switch(direction) {
+                    case "R":
+                        point.x++;
+                    break;
+                    case "L":
+                        point.x--;
+                    break;
+                    case "B":
+                        point.y++;
+                    break;
+                    case "T":
+                        point.y--;
+                    break;                    
+                }
+                
+                Color playerColor = playersColors.get(senderName);
+                Starter.BATTLEFIELD.getComponentAt(point).setBackground(playerColor);
+                playersPositions.replace(senderName, point);
             }
         });
     }

@@ -5,11 +5,15 @@
  */
 package gui;
 
+import agent.RunnerAgent;
+import agent.WallAgent;
 import jade.core.AID;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -49,20 +53,37 @@ public class Battlefield extends javax.swing.JFrame {
             cons.gridx = i;
             for(int j = 0; j < COLUMNS; j++) {
                 cons.gridy = j;
+                                
+                GroundPanel panel = new GroundPanel(Color.BLACK, new GridBagLayout());
+                panel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+                panel.setSize(WIDTH / COLUMNS, HEIGHT / LINES);                
                 
-                JPanel panel = new JPanel(new GridBagLayout());
-                
-                panel.setBackground(Color.black);
-                panel.setSize(WIDTH / COLUMNS, HEIGHT / LINES);
+                // Setting the Wall Agents
+                if(i == 0 || i == LINES - 1 || j == 0 || j == LINES - 1)
+                    panel.setWallAgent(new WallAgent(panel));
                 
                 this.add(panel, cons);
                 panel.revalidate();
             }
-        }
+        }                
     }
     
-    private void moveAgent(AID agent, String move) {
-        
+    public void putAgent(RunnerAgent agent, int team) {
+        Point point = null;
+        switch(team) {
+            case 1:
+                point = new Point(2, LINES / 2);
+            break;
+            case 2:
+                point = new Point(COLUMNS - 2, LINES / 2);
+            break;
+            default:
+                point = new Point(COLUMNS / 2, LINES / 2);
+            break;
+        }
+        Component c = this.getComponentAt(point);
+        c.setBackground(agent.color);
+        c.repaint();
     }
 
     /**

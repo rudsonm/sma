@@ -17,13 +17,13 @@ import java.awt.Color;
  * @author 5966868
  */
 public class RunnerAgent extends Agent {
-    public Color cor;
+    public Color color;
     Battlefield battlefield;
     
     private String nextMove = null;
     
-    public RunnerAgent(Battlefield battlefield, Color cor) {
-        this.cor = cor;
+    public RunnerAgent(Battlefield battlefield, Color color) {
+        this.color = color;
         this.battlefield = battlefield;        
     }
 
@@ -49,5 +49,9 @@ public class RunnerAgent extends Agent {
     
     private String getNextMove() {
         return "R";
+    }
+    
+    public void die() {
+        this.takeDown();
     }
 }
