@@ -15,15 +15,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TronRunner extends Agent {
-    public Color cor;
     Battlefield battlefield;
-    private Color color;
+    public Color color;
     private Point2D position;
     
     private String nextMove = null;
     
-//    public TronRunner(Battlefield battlefield, Color cor) {
-//        this.cor = cor;
+//    public TronRunner(Battlefield battlefield, Color color) {
+//        this.color = color;
 //        this.battlefield = battlefield;        
 //    }
     
@@ -47,6 +46,8 @@ public class TronRunner extends Agent {
             Logger.getLogger(TronRunner.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+//        addBehaviour(new );
+        
 //        addBehaviour(new CyclicBehaviour() {
 //            @Override
 //            public void action() {
@@ -66,5 +67,9 @@ public class TronRunner extends Agent {
     
     private String getNextMove() {
         return "R";
+    }
+    
+    public void die() {
+        this.takeDown();
     }
 }

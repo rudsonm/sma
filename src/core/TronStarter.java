@@ -1,3 +1,5 @@
+package core;
+
 
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
@@ -17,7 +19,7 @@ public class TronStarter {
         container.createNewAgent("p2", "agent.TronRunner", null).start();
         
         
-//        container.createNewAgent("rma", "jade.tools.rma.rma", null).start();
+        container.createNewAgent("rma", "jade.tools.rma.rma", null).start();
         
         
 

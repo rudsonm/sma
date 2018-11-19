@@ -5,10 +5,17 @@
  */
 package agent;
 
+import gui.GroundPanel;
+import java.awt.Color;
+
 /**
  *
  * @author 5966868
  */
 public class AssassinStaticWall extends WallAgent {
+    
+    public AssassinStaticWall(GroundPanel panel) {
+        super(panel);
+    }
     
 }
