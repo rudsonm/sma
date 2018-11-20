@@ -1,12 +1,9 @@
 package agent;
 
-import core.Starter;
-import core.Starter;
 import gui.Battlefield;
 import gui.GroundPanel;
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.core.behaviours.TickerBehaviour;
@@ -42,6 +39,11 @@ public class CommanderAgent extends Agent {
     private final Scanner scanner = new Scanner(System.in);
     
     private final List<AID> runners = new LinkedList<>();
+    
+    private final Battlefield battlefield = new Battlefield();
+
+    public CommanderAgent() {
+    }
     
     @Override
     protected void setup() {
@@ -93,6 +95,8 @@ public class CommanderAgent extends Agent {
                             CommanderAgent.this.runners.add(reply.getSender());
                         }
                     }
+                    
+                    battlefield.setVisible(true);
 
                 } catch (FIPAException ex) {
                     Logger.getLogger(CommanderAgent.class.getName()).log(Level.SEVERE, null, ex);
@@ -101,15 +105,19 @@ public class CommanderAgent extends Agent {
         });
         
         // BATTLE BEHAVIOUR
-        sequentialBehaviour.addSubBehaviour(new TickerBehaviour(this, 100) {
+        sequentialBehaviour.addSubBehaviour(new TickerBehaviour(this, INTERVAL) {
             @Override protected void onTick() {
                 
-                ACLMessage requestMove = new ACLMessage(ACLMessage.REQUEST);
-                for (AID runner : runners) {
-                    requestMove.addReceiver(runner);
+                ACLMessage battlefieldUpdate = new ACLMessage(ACLMessage.INFORM);
+                try {
+                    battlefieldUpdate.setContentObject(battlefield);
+                } catch (IOException ex) {
+                    Logger.getLogger(CommanderAgent.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                send(requestMove);
-                System.out.println("Requested Movement");
+                for (AID runner : runners) {
+                    battlefieldUpdate.addReceiver(runner);
+                }
+                CommanderAgent.this.send(battlefieldUpdate);
                 
                 Map<AID, String> moves = new HashMap<>(nRunners);
                 boolean received = false;
@@ -131,7 +139,9 @@ public class CommanderAgent extends Agent {
                 for (Map.Entry<AID, String> move : moves.entrySet()) {
                     System.out.println("Move of " + move.getKey().getLocalName() + " is " + move.getValue());
                 }
+                
                 // do something with movement
+                
                 
             }
         });
@@ -139,45 +149,25 @@ public class CommanderAgent extends Agent {
         this.addBehaviour(sequentialBehaviour);
     }
     
-    protected void getActions(final ServiceDescription sd) {
-        this.addBehaviour(new TickerBehaviour(this, INTERVAL) {
-            @Override
-            protected void onTick() {
-                ACLMessage message = myAgent.receive();
-                String type = message.getOntology();
-                if(type != "Action")
-                    return;
-                
-                AID sender = message.getSender();
-                String senderName = sender.getLocalName();
-                String direction = message.getContent();
-                
-                Point point = playersPositions.get(senderName);
-                GroundPanel panel = (GroundPanel) Starter.BATTLEFIELD.getComponentAt(point);
-                panel.setWallAgent(new AssassinStaticWall(panel));
-                
-                switch(direction) {
-                    case "R":
-                        point.x++;
-                    break;
-                    case "L":
-                        point.x--;
-                    break;
-                    case "B":
-                        point.y++;
-                    break;
-                    case "T":
-                        point.y--;
-                    break;                    
-                }
-                
-                Color playerColor = playersColors.get(senderName);
-                Starter.BATTLEFIELD.getComponentAt(point).setBackground(playerColor);
-                playersPositions.replace(senderName, point);
-            }
-        });
+    protected void moveRunner(AID runner, String direction){
+        
+        String runnerName = runner.getLocalName();
+
+        Point point = playersPositions.get(runnerName);
+        GroundPanel panel = (GroundPanel) battlefield.getComponentAt(point);
+        panel.setWallAgent(new AssassinStaticWall(panel));
+
+        switch(direction) {
+            case "R": point.x++; break;
+            case "L": point.x--; break;
+            case "B": point.y++; break;
+            case "T": point.y--; break;
+        }
+
+        Color playerColor = playersColors.get(runnerName);
+        battlefield.getComponentAt(point).setBackground(playerColor);
+        playersPositions.replace(runnerName, point);
     }
-    
     
 
     private Map<String, AID> lookForRunners() throws FIPAException{

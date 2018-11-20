@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TronRunner extends Agent {
-    Battlefield battlefield;
+    protected Battlefield battlefield;
     public Color color;
     private Point2D position;
     
@@ -88,11 +88,7 @@ public class TronRunner extends Agent {
                         reply.addReceiver(commander);
                         TronRunner.this.send(reply);
                         
-                        // TODO: receive battlefield
-                        
                         System.out.println("Ready to rock!");
-                        
-                        
                         
                     } catch (FIPAException ex) {
                         Logger.getLogger(TronRunner.class.getName()).log(Level.SEVERE, null, ex);
@@ -104,20 +100,20 @@ public class TronRunner extends Agent {
         sequentialBehaviour.addSubBehaviour(new CyclicBehaviour(this) {
             @Override
             public void action() {
-                String nextMove = getNextMove();
-                
-                ACLMessage req = null;
-                while (req == null){
-                    req = blockingReceive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
+                ACLMessage update = blockingReceive(MessageTemplate.MatchPerformative(ACLMessage.INFORM));
+                try {
+                    TronRunner.this.battlefield = (Battlefield) update.getContentObject();
+                    System.out.println("Updated battlefield");
+                } catch (UnreadableException ex) {
+                    Logger.getLogger(TronRunner.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                
+                String nextMove = getNextMove();
                 
                 ACLMessage move = new ACLMessage(ACLMessage.INFORM);
                 move.setContent(nextMove);
                 move.addReceiver(commander);
-                send(move);
-                
-                // TODO: Update battlefield
-                
+                send(move);                
             }
         });
         

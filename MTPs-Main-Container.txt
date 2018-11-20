@@ -1,1 +1,1 @@
-http://ViniciusAS-Inspiron:7778/acc
+http://viniciusas-inspiron.univali.br:7778/acc

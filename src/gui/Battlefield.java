@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.io.Serializable;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,7 +19,7 @@ import javax.swing.border.Border;
  *
  * @author 5966868
  */
-public class Battlefield extends javax.swing.JFrame {
+public class Battlefield extends javax.swing.JFrame implements Serializable {
     private final Integer LINES = 40;
     private final Integer COLUMNS = 40;
     
