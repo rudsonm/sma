@@ -7,15 +7,21 @@ import gui.GroundPanel;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 import java.awt.Color;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -28,52 +34,109 @@ import java.util.logging.Logger;
 public class CommanderAgent extends Agent {
 
     private final int INTERVAL = 1000;
+    private final int nRunners = 2;
     
     private HashMap<String, Point> playersPositions;
     private HashMap<String, Color> playersColors;
     
-    
-    private final DFAgentDescription description = new DFAgentDescription();
-    
     private final Scanner scanner = new Scanner(System.in);
+    
+    private final List<AID> runners = new LinkedList<>();
     
     @Override
     protected void setup() {
         super.setup();
-        description.setName(getAID());
         
-        try {
-            
-//            DFService.register(this, this.description);
-            Map<String, AID> runners = lookForRunners();
-            
-            System.out.println("Available Runners:");
-            for (String runner : runners.keySet()) {
-                System.out.println(runner);
+        SequentialBehaviour sequentialBehaviour = new SequentialBehaviour(this);
+        
+        // SETUP BEHAVIOUR
+        sequentialBehaviour.addSubBehaviour(new OneShotBehaviour() {
+            @Override
+            public void action() {                
+                try {
+                    Map<String, AID> runners = lookForRunners();
+
+                    System.out.println("Available Runners:");
+                    for (String runner : runners.keySet()) {
+                        System.out.println(runner);
+                    }
+
+                    System.out.println("Choose the " + nRunners + " runners:");
+
+                    AID[] chosenRunners = new AID[nRunners];
+                    for (int i = 0; i < nRunners; ++i){
+                        chosenRunners[i] = runners.get(scanner.next());
+                    }
+
+
+                    ACLMessage m = new ACLMessage(ACLMessage.PROPOSE);
+                    m.setContent("join battle");
+
+                    for (AID runner : chosenRunners) {
+                        m.addReceiver(runner);
+                    }
+
+                    System.out.println("Proposing: " + m.getContent());
+
+                    CommanderAgent.this.send(m);
+
+                    int n = 0;
+                    while (n < nRunners){
+                        ACLMessage reply = CommanderAgent.this.blockingReceive();
+                        if (reply == null) continue;
+                        if (
+                                reply.getPerformative() == ACLMessage.ACCEPT_PROPOSAL
+                            &&  reply.getContent().equals("joined battle")
+                        ){
+                            System.out.println("Propose accepted: " + reply.getSender().getLocalName());
+                            ++n;
+                            CommanderAgent.this.runners.add(reply.getSender());
+                        }
+                    }
+
+                } catch (FIPAException ex) {
+                    Logger.getLogger(CommanderAgent.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-            
-            int nRunners = 2;
-            System.out.println("Choose the " + nRunners + " runners:");
-            
-            AID[] chosenRunners = new AID[nRunners];
-            for (int i = 0; i < nRunners; ++i){
-                chosenRunners[i] = runners.get(scanner.next());
-                DFService.deregister(this, chosenRunners[i]);
-            }
-            
-            for (AID runner : chosenRunners) {
-                jade.domain.introspection.ACLMessage message = new jade.domain.introspection.ACLMessage();
-                message.setPayload("Join Battlefield");
+        });
+        
+        // BATTLE BEHAVIOUR
+        sequentialBehaviour.addSubBehaviour(new TickerBehaviour(this, 100) {
+            @Override protected void onTick() {
                 
-                // TODO: send message
+                ACLMessage requestMove = new ACLMessage(ACLMessage.REQUEST);
+                for (AID runner : runners) {
+                    requestMove.addReceiver(runner);
+                }
+                send(requestMove);
+                System.out.println("Requested Movement");
+                
+                Map<AID, String> moves = new HashMap<>(nRunners);
+                boolean received = false;
+                while (!received){
+                    ACLMessage move = blockingReceive(MessageTemplate.MatchPerformative(ACLMessage.INFORM));
+                    
+                    if (move == null) continue;
+                    
+                    moves.put(move.getSender(), move.getContent());
+                    
+                    received = true;
+                    for (AID runner : runners) {
+                        if (moves.get(runner) == null){
+                            received = false;
+                        }
+                    }
+                }
+                
+                for (Map.Entry<AID, String> move : moves.entrySet()) {
+                    System.out.println("Move of " + move.getKey().getLocalName() + " is " + move.getValue());
+                }
+                // do something with movement
                 
             }
-            
-            
-            
-        } catch (FIPAException ex) {
-            Logger.getLogger(CommanderAgent.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        });
+        
+        this.addBehaviour(sequentialBehaviour);
     }
     
     protected void getActions(final ServiceDescription sd) {

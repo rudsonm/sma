@@ -8,7 +8,7 @@ import jade.wrapper.StaleProxyException;
 
 
 public class TronStarter {
-    public static void main(String[] args) throws StaleProxyException {
+    public static void main(String[] args) throws StaleProxyException, InterruptedException {
         
         Runtime jadeRuntime = jade.core.Runtime.instance();
         ProfileImpl profile = new ProfileImpl();
@@ -19,11 +19,11 @@ public class TronStarter {
         container.createNewAgent("p2", "agent.TronRunner", null).start();
         
         
-        container.createNewAgent("rma", "jade.tools.rma.rma", null).start();
+//        container.createNewAgent("rma", "jade.tools.rma.rma", null).start();
         
-        
+        Thread.sleep(3000);
 
-        container.createNewAgent("battlefieldAgent", "gui.BattlefieldAgent", null).start();
+        container.createNewAgent("commanderAgent", "agent.CommanderAgent", null).start();
         
     }
 }

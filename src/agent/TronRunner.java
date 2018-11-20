@@ -4,13 +4,19 @@ import gui.Battlefield;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.ReceiverBehaviour;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +31,8 @@ public class TronRunner extends Agent {
 //        this.color = color;
 //        this.battlefield = battlefield;        
 //    }
+    
+    private AID commander;
     
     @Override
     protected void setup() {
@@ -46,8 +54,87 @@ public class TronRunner extends Agent {
             Logger.getLogger(TronRunner.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-//        addBehaviour(new );
+        SequentialBehaviour sequentialBehaviour = new SequentialBehaviour();
         
+        sequentialBehaviour.addSubBehaviour(
+            new ReceiverBehaviour(this, -1, new MessageTemplate((ACLMessage m) -> {
+                AID sender = m.getSender();
+                String performative = ACLMessage.getPerformative(m.getPerformative());
+
+                System.out.println("---------");
+                System.out.println("Received message (" + getLocalName() + "):");
+                System.out.println("Performative: " + performative);
+                System.out.println("Content: " + m.getContent());
+                System.out.println("Sender: " + sender.getName());
+                System.out.println("---------");
+
+                if (
+                        performative.equals("PROPOSE")
+                    &&  m.getContent().equals("join battle")){
+                    commander = sender;                    
+                    return true;
+                }
+                return false;
+            }))
+        );
+        sequentialBehaviour.addSubBehaviour(
+            new OneShotBehaviour() {
+                @Override public void action() {
+                    try {
+                        DFService.deregister(TronRunner.this);
+                        
+                        ACLMessage reply = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
+                        reply.setContent("joined battle");
+                        reply.addReceiver(commander);
+                        TronRunner.this.send(reply);
+                        
+                        // TODO: receive battlefield
+                        
+                        System.out.println("Ready to rock!");
+                        
+                        
+                        
+                    } catch (FIPAException ex) {
+                        Logger.getLogger(TronRunner.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        );
+        
+        sequentialBehaviour.addSubBehaviour(new CyclicBehaviour(this) {
+            @Override
+            public void action() {
+                String nextMove = getNextMove();
+                
+                ACLMessage req = null;
+                while (req == null){
+                    req = blockingReceive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
+                }
+                
+                ACLMessage move = new ACLMessage(ACLMessage.INFORM);
+                move.setContent(nextMove);
+                move.addReceiver(commander);
+                send(move);
+                
+                // TODO: Update battlefield
+                
+            }
+        });
+        
+//        sequentialBehaviour.addSubBehaviour(
+//            new OneShotBehaviour() {
+//                @Override public void action() {
+//                    System.out.println("Joining battle (" + getLocalName() + "):");
+//                    String nextMove = getNextMove();
+//                    System.out.println("Started execution of TronRunner");
+//                    System.out.println("Battlefield: " + commander.getLocalName());
+//                }
+//            }
+//        );
+        
+        this.addBehaviour(sequentialBehaviour);
+        
+//        addBehaviour(new );
 //        addBehaviour(new CyclicBehaviour() {
 //            @Override
 //            public void action() {
