@@ -166,7 +166,7 @@ public class TronRunner extends Agent {
         return move;
     }
     
-    private boolean isOutOfBound(int x, int y) {
+    protected boolean isOutOfBound(int x, int y) {
         if(x < 0 || x >= fieldDimension.width)
             return true;
         if(y < 0 || y >= fieldDimension.height)
@@ -174,7 +174,7 @@ public class TronRunner extends Agent {
         return false;
     }
     
-    private boolean hasComponent(int x, int y) {
+    protected boolean hasComponent(int x, int y) {
         return battlefield[x][y] == CommanderAgent.WALL_CODE || battlefield[x][y] == CommanderAgent.PLAYER_CODE;
     }
     
@@ -189,5 +189,5 @@ public class TronRunner extends Agent {
         System.out.println(str);
     }
     
-    public void onBattlefieldUpdate() { }
+    protected void onBattlefieldUpdate() { }
 }

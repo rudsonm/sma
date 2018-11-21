@@ -20,8 +20,8 @@ import javax.swing.border.Border;
  * @author 5966868
  */
 public class Battlefield extends javax.swing.JFrame implements Serializable {
-    public final Integer LINES = 30;
-    public final Integer COLUMNS = 30;
+    public final Integer LINES = 20;
+    public final Integer COLUMNS = 20;
     
     /**
      * Creates new form Battlefield

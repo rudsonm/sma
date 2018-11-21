@@ -39,8 +39,8 @@ public class CommanderAgent extends Agent {
     public static final int PLAYER_CODE = 1;
     public static final int WALL_CODE = 2;    
     
-    public final int INTERVAL = 1000;
-    public int nRunners = 4;
+    public final int INTERVAL = 500;
+    public int nRunners = 2;
     public int nWallAgents = 0;
     
     public HashMap<AID, Point> playersPositions = new HashMap<>();
@@ -129,7 +129,7 @@ public class CommanderAgent extends Agent {
                 
                 ACLMessage battlefieldUpdate = new ACLMessage(ACLMessage.INFORM);
                 try {                   
-                    MetaData md = new MetaData(battlefieldMatrix, playersPositions, new Dimension(battlefield.LINES, battlefield.COLUMNS));
+                    MetaData md = new MetaData(battlefieldMatrix, playersPositions, new Dimension(battlefield.COLUMNS, battlefield.LINES));
                     if(nRunners <= 1)
                         md.setWinner();
                     battlefieldUpdate.setContentObject(md);
