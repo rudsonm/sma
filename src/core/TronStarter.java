@@ -1,13 +1,9 @@
 package core;
 
-
-import gui.Battlefield;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.StaleProxyException;
-import java.awt.Color;
-
 
 public class TronStarter {
     public static void main(String[] args) throws StaleProxyException, InterruptedException {
@@ -22,6 +18,9 @@ public class TronStarter {
         container.createNewAgent("p3", "agent.TronRunner", null).start();
         container.createNewAgent("p4", "agent.TronRunner", null).start();
         container.createNewAgent("astar", "agent.AstarRunnerAgent", null).start();
+        
+        container.createNewAgent("ls1", "agent.LocalSearchRunnerAgent", null).start();
+        container.createNewAgent("ls2", "agent.LocalSearchRunnerAgent", null).start();
         
         
 //        container.createNewAgent("rma", "jade.tools.rma.rma", null).start();
