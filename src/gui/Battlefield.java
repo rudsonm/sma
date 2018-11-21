@@ -30,7 +30,7 @@ public class Battlefield extends javax.swing.JFrame implements Serializable {
         int WIDTH = this.getWidth();
         int HEIGHT = this.getHeight();
         
-        this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+//        this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         
         initComponents();
         this.setLayout(new GridBagLayout());
@@ -66,12 +66,12 @@ public class Battlefield extends javax.swing.JFrame implements Serializable {
     
     @Override
     public Component getComponentAt(int x, int y) {
-        return this.getContentPane().getComponent(x * this.LINES + y);
+        return this.getContentPane().getComponent(y * this.LINES + x);
     }
     
     @Override
     public Component getComponentAt(Point point) {
-        return this.getContentPane().getComponent((int) point.getX() * this.LINES + (int) point.getY());
+        return this.getContentPane().getComponent(point.y * this.LINES + point.x);
     }
 
     /**

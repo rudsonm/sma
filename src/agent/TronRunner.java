@@ -1,6 +1,6 @@
 package agent;
 
-import gui.Battlefield;
+import core.MetaData;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -14,25 +14,17 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
-import java.awt.Color;
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.Random;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TronRunner extends Agent {
-    protected Battlefield battlefield;
-    public Color color;
-    private Point2D position;
-    
-    private String nextMove = null;
-    
-//    public TronRunner(Battlefield battlefield, Color color) {
-//        this.color = color;
-//        this.battlefield = battlefield;        
-//    }
-    
+    protected int[][] battlefield;
+    protected Dimension fieldDimension;
+    protected Map<AID, Point> positions;
+            
     private AID commander;
     
     @Override
@@ -102,14 +94,17 @@ public class TronRunner extends Agent {
             public void action() {
                 ACLMessage update = blockingReceive(MessageTemplate.MatchPerformative(ACLMessage.INFORM));
                 try {
-                    TronRunner.this.battlefield = (Battlefield) update.getContentObject();
+                    MetaData md = (MetaData) update.getContentObject();                    
+                    battlefield = md.battlefield;
+                    fieldDimension = md.battlefieldDimension;
+                    positions = md.positions;
+                    
                     System.out.println("Updated battlefield");
                 } catch (UnreadableException ex) {
                     Logger.getLogger(TronRunner.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
                 String nextMove = getNextMove();
-                System.out.println("Next move: " + nextMove);
                 ACLMessage move = new ACLMessage(ACLMessage.INFORM);
                 move.setContent(nextMove);
                 move.addReceiver(commander);
@@ -117,47 +112,71 @@ public class TronRunner extends Agent {
             }
         });
         
-//        sequentialBehaviour.addSubBehaviour(
-//            new OneShotBehaviour() {
-//                @Override public void action() {
-//                    System.out.println("Joining battle (" + getLocalName() + "):");
-//                    String nextMove = getNextMove();
-//                    System.out.println("Started execution of TronRunner");
-//                    System.out.println("Battlefield: " + commander.getLocalName());
-//                }
-//            }
-//        );
-        
         this.addBehaviour(sequentialBehaviour);
         
         addBehaviour(new CyclicBehaviour() {
             @Override
-            public void action() {
-                ACLMessage message = TronRunner.this.receive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
-                if(message != null && message.getContent().equals(WallAgent.KILL_MESSAGE)) {                    
-                    takeDown();
+            public void action() {                
+                ACLMessage message = receive(MessageTemplate.MatchOntology(WallAgent.KILL_MESSAGE));
+                if(message != null){// && message.getContent().equals(WallAgent.KILL_MESSAGE)) {
+                    printBattlefield();
+                    takeDown();                    
                 }
             }
         });
     }
     
-    private String getNextMove() {
-        int number = 1 + (int)(Math.random() * ((4 - 1) + 1));
-        switch(number) {
-            case 1:
-                return "R";
-            case 2:
-                return "L";
-            case 3:
-                return "T";
-            case 4:
-                return "B";
-            default: 
-                return "B";
-        }
+    protected String getNextMove() {
+        Point p = positions.get(this.getAID());
+        String move = "";
+        int x, y, tries = 0;
+        do {
+            x = p.x;
+            y = p.y;
+            int number = 1 + (int)(Math.random() * 4);
+            switch(number) {
+                case 1:
+                    y++;
+                    move = "R";
+                break;
+                case 2:
+                    y--;
+                    move = "L";
+                break;
+                case 3:
+                    x--;
+                    move = "T";
+                break;
+                case 4:
+                    x++;
+                    move = "B";
+                break;
+            }
+            tries++;
+        } while((hasComponent(x, y) || isOutOfBound(x, y)) && tries <= 8);
+        return move;
     }
     
-    public void die() {
-        this.takeDown();
+    private boolean isOutOfBound(int x, int y) {
+        if(x < 0 || x >= fieldDimension.width)
+            return true;
+        if(y < 0 || y >= fieldDimension.height)
+            return true;
+        return false;
+    }
+    
+    private boolean hasComponent(int x, int y) {
+        return battlefield[x][y] == CommanderAgent.WALL_CODE || battlefield[x][y] == CommanderAgent.PLAYER_CODE;
+    }
+    
+    public void printBattlefield() {
+        String str = "";
+        for (int i = 0; i < fieldDimension.width; i++) {
+            for (int j = 0; j < fieldDimension.height; j++) {
+                str += battlefield[i][j];
+            }                        
+            str += "\n";
+        }
+        System.out.println(str);
     }
 }

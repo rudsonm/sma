@@ -5,12 +5,10 @@
  */
 package gui;
 
-import agent.TronRunner;
-import agent.WallAgent;
 import jade.core.AID;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.LayoutManager;
+import java.awt.Point;
 import java.io.Serializable;
 
 /**
@@ -18,7 +16,6 @@ import java.io.Serializable;
  * @author 09952410905
  */
 public class GroundPanel extends javax.swing.JPanel implements Serializable {
-
     private AID tronRunner = null;
     
     public GroundPanel(Color color, LayoutManager layout) {        

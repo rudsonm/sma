@@ -12,22 +12,36 @@ public class WallAgent extends Agent {
     public static final Color COLOR = Color.MAGENTA;
     public static final String KILL_MESSAGE = "Die";
     private GroundPanel panel;
+    private AID commander;
+    
     @Override
     protected void setup() {        
         Object[] args = getArguments();
         this.panel = (GroundPanel) args[0];
+        this.commander = (AID) args[1];
         
-        addBehaviour(new TickerBehaviour(WallAgent.this, 500) {
+        addBehaviour(new TickerBehaviour(WallAgent.this, 200) {
             @Override
             protected void onTick() {
                 if(panel.hasTronRunner()) {
                     AID runner = panel.getTronRunner();
-                    ACLMessage message = new ACLMessage(ACLMessage.REQUEST);                    
+                    System.out.println("I killed " + runner.getName());
+                    ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
                     message.setContent(WallAgent.KILL_MESSAGE);
                     message.addReceiver(runner);
                     WallAgent.this.send(message);
                     
-                    panel.setBackground(WallAgent.COLOR);
+                    try {
+                        ACLMessage messageToCommander = new ACLMessage(ACLMessage.REQUEST);
+                        messageToCommander.setContentObject(runner);
+                        messageToCommander.addReceiver(commander);
+                        send(messageToCommander);
+                    } catch(Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    
+                    panel.removeTronRunner();
+                    panel.setBackground(Color.WHITE);
                 }
             }
         });
