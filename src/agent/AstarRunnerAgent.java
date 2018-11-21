@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package agent;
 
 import jade.core.AID;
@@ -48,7 +43,7 @@ public class AstarRunnerAgent extends TronRunner {
         }        
         path = Astar(currentPos, goal);
         
-        if(path.size() == 0)
+        if(path.isEmpty())
             return super.getNextMove();
         
         path.remove(0);
@@ -65,15 +60,6 @@ public class AstarRunnerAgent extends TronRunner {
         if(currentPos.y - 1 == nextPos.y)
             return "L";
         return "";
-    }
-    
-    private Point getEnemyPosition() {
-        Point enemyP = null;
-        for(Map.Entry<AID, Point> entry : positions.entrySet()) {
-            if(entry.getKey() != getAID())
-                enemyP = entry.getValue();
-        }
-        return enemyP;
     }
     
     private List<Point> Astar(Point start, Point goal) {
@@ -173,12 +159,6 @@ public class AstarRunnerAgent extends TronRunner {
         if(!isOutOfBound(west.x, west.y) && !hasComponent(west.x, west.y))
             points.add(west);
         return points;
-    }
-    
-    private double getDistanceBetween(Point a, Point b) {
-        return Math.sqrt(
-            Math.pow(a.x - b.x, 2) + Math.pow(a.x - b.x, 2)
-        );
     }
     
     private List<Point> getSmallestPathBetween(Point a, Point b) {

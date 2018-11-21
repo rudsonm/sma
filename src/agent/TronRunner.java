@@ -125,8 +125,8 @@ public class TronRunner extends Agent {
         
         addBehaviour(new CyclicBehaviour() {
             @Override
-            public void action() {                
-                ACLMessage message = receive(MessageTemplate.MatchOntology(WallAgent.KILL_MESSAGE));
+            public void action() {
+                ACLMessage message = receive(MessageTemplate.MatchContent(WallAgent.KILL_MESSAGE));
                 if(message != null){// && message.getContent().equals(WallAgent.KILL_MESSAGE)) {
                     printBattlefield();
                     takeDown();                    
@@ -172,6 +172,21 @@ public class TronRunner extends Agent {
         if(y < 0 || y >= fieldDimension.height)
             return true;
         return false;
+    }
+    
+    protected Point getEnemyPosition() {
+        Point enemyP = null;
+        for(Map.Entry<AID, Point> entry : positions.entrySet()) {
+            if(!entry.getKey().getLocalName().equals(getLocalName()))
+                enemyP = entry.getValue();
+        }
+        return enemyP;
+    }
+    
+    protected double getDistanceBetween(Point a, Point b) {
+        return Math.sqrt(
+            Math.pow((double) a.x - b.x, 2) + Math.pow((double) a.y - b.y, 2)
+        );
     }
     
     protected boolean hasComponent(int x, int y) {
