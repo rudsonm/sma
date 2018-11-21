@@ -29,11 +29,11 @@ public class AstarRunnerAgent extends TronRunner {
         
         Point enemyPos = getEnemyPosition();
         Point goal = null;
-        if(currentPos.y + 2 >= enemyPos.y)
+        if(currentPos.y + 4 >= enemyPos.y)
             enemyReached = true;
         if(currentPos.x == 1 && currentPos.y == 2) {
             enemyTraped = true;
-            return "L";
+            return "T";
         }
         
         if(enemyReached) {
