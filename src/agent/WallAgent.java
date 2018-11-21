@@ -26,13 +26,13 @@ public class WallAgent extends Agent {
                 if(panel.hasTronRunner()) {
                     AID runner = panel.getTronRunner();
                     System.out.println("I killed " + runner.getName());
-                    ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+                    ACLMessage message = new ACLMessage(ACLMessage.FAILURE);
                     message.setContent(WallAgent.KILL_MESSAGE);
                     message.addReceiver(runner);
                     WallAgent.this.send(message);
                     
                     try {
-                        ACLMessage messageToCommander = new ACLMessage(ACLMessage.REQUEST);
+                        ACLMessage messageToCommander = new ACLMessage(ACLMessage.FAILURE);
                         messageToCommander.setContentObject(runner);
                         messageToCommander.addReceiver(commander);
                         send(messageToCommander);

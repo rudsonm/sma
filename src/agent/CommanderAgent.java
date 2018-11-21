@@ -15,13 +15,11 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.wrapper.ContainerController;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,16 +28,12 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author 5966868
- */
 public class CommanderAgent extends Agent {
 
     public static final int PLAYER_CODE = 1;
     public static final int WALL_CODE = 2;    
     
-    public final int INTERVAL = 500;
+    public final int INTERVAL = 250;
     public int nRunners = 2;
     public int nWallAgents = 0;
     
@@ -181,7 +175,7 @@ public class CommanderAgent extends Agent {
             @Override
             public void action() {
                 try {
-                    ACLMessage message = CommanderAgent.this.receive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
+                    ACLMessage message = CommanderAgent.this.receive(MessageTemplate.MatchPerformative(ACLMessage.FAILURE));
                     if(message != null) {
                         AID agent = (AID) message.getContentObject();
                         CommanderAgent.this.nRunners--;
