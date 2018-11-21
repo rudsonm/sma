@@ -19,6 +19,8 @@ public class TronStarter {
         
         container.createNewAgent("p1", "agent.TronRunner", null).start();
         container.createNewAgent("p2", "agent.TronRunner", null).start();
+        container.createNewAgent("p3", "agent.TronRunner", null).start();
+        container.createNewAgent("p4", "agent.TronRunner", null).start();
         
         
 //        container.createNewAgent("rma", "jade.tools.rma.rma", null).start();

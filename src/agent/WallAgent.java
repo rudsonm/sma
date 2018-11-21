@@ -4,28 +4,26 @@ import gui.GroundPanel;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import java.awt.Color;
 
 public class WallAgent extends Agent {
     public static final Color COLOR = Color.MAGENTA;
+    public static final String KILL_MESSAGE = "Die";
     private GroundPanel panel;
-    
     @Override
-    protected void setup() {
-        System.out.println(this.getAID().getName() + " estou pronto para aniquilar voce!");
+    protected void setup() {        
         Object[] args = getArguments();
-        
         this.panel = (GroundPanel) args[0];
-//        panel.setBackground(WallAgent.COLOR);
         
-        addBehaviour(new CyclicBehaviour() {
+        addBehaviour(new TickerBehaviour(WallAgent.this, 500) {
             @Override
-            public void action() {
+            protected void onTick() {
                 if(panel.hasTronRunner()) {
                     AID runner = panel.getTronRunner();
-                    ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-                    message.setContent("Die");
+                    ACLMessage message = new ACLMessage(ACLMessage.REQUEST);                    
+                    message.setContent(WallAgent.KILL_MESSAGE);
                     message.addReceiver(runner);
                     WallAgent.this.send(message);
                     

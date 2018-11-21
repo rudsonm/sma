@@ -52,33 +52,26 @@ public class Battlefield extends javax.swing.JFrame implements Serializable {
                 
                 GroundPanel panel = new GroundPanel(Color.BLACK, new GridBagLayout());
                 panel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-                panel.setSize(WIDTH / COLUMNS, HEIGHT / LINES);                
+                panel.setSize(WIDTH / COLUMNS, HEIGHT / LINES);
                 
                 this.add(panel, cons);
             }
-        }
+        }        
     }
     
-    public void putAgent(Color color, int team) {
-        Point point = null;
-        switch(team) {
-            case 1:
-                point = new Point(2, LINES / 2);
-            break;
-            case 2:
-                point = new Point(COLUMNS - 2, LINES / 2);
-            break;
-            default:
-                point = new Point(COLUMNS / 2, LINES / 2);
-            break;
-        }
+    public void putAgent(Color color, Point point) {        
         Component c = this.getComponentAt(point);
         c.setBackground(color);
     }
     
     @Override
     public Component getComponentAt(int x, int y) {
-        return this.getRootPane().getContentPane().getComponentAt(x, y);
+        return this.getContentPane().getComponent(x * this.LINES + y);
+    }
+    
+    @Override
+    public Component getComponentAt(Point point) {
+        return this.getContentPane().getComponent((int) point.getX() * this.LINES + (int) point.getY());
     }
 
     /**

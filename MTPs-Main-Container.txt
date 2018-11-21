@@ -1,1 +1,1 @@
-http://CP-38:7778/acc
+http://CTIMA-105440.itajai.local:7778/acc

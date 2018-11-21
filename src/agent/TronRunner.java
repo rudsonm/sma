@@ -17,6 +17,7 @@ import jade.lang.acl.UnreadableException;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -108,7 +109,7 @@ public class TronRunner extends Agent {
                 }
                 
                 String nextMove = getNextMove();
-                
+                System.out.println("Next move: " + nextMove);
                 ACLMessage move = new ACLMessage(ACLMessage.INFORM);
                 move.setContent(nextMove);
                 move.addReceiver(commander);
@@ -127,28 +128,33 @@ public class TronRunner extends Agent {
 //            }
 //        );
         
-        this.addBehaviour(sequentialBehaviour);                
+        this.addBehaviour(sequentialBehaviour);
         
-//        addBehaviour(new );
-//        addBehaviour(new CyclicBehaviour() {
-//            @Override
-//            public void action() {
-//                ACLMessage message = TronRunner.this.receive();
-//                if(message != null) {                    
-//                    // recebe mensagem de atualizacao
-//                }
-//                ACLMessage reply = message.createReply();
-//                reply.addReceiver(new AID("Commander", AID.ISLOCALNAME));
-//                reply.setOntology("Action");
-//                reply.setContent(TronRunner.this.getNextMove()
-//                );
-//                TronRunner.this.send(message);
-//            }
-//        });
+        addBehaviour(new CyclicBehaviour() {
+            @Override
+            public void action() {
+                ACLMessage message = TronRunner.this.receive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
+                if(message != null && message.getContent().equals(WallAgent.KILL_MESSAGE)) {                    
+                    takeDown();
+                }
+            }
+        });
     }
     
     private String getNextMove() {
-        return "R";
+        int number = 1 + (int)(Math.random() * ((4 - 1) + 1));
+        switch(number) {
+            case 1:
+                return "R";
+            case 2:
+                return "L";
+            case 3:
+                return "T";
+            case 4:
+                return "B";
+            default: 
+                return "B";
+        }
     }
     
     public void die() {
