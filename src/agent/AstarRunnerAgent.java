@@ -25,6 +25,9 @@ public class AstarRunnerAgent extends TronRunner {
     
     @Override
     protected String getNextMove() {
+        if(positions.size() > 3)
+            super.getNextMove();
+        
         Point currentPos = positions.get(getAID());
         
         Point enemyPos = getEnemyPosition();
