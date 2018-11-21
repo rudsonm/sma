@@ -20,7 +20,7 @@ public class WallAgent extends Agent {
         this.panel = (GroundPanel) args[0];
         this.commander = (AID) args[1];
         
-        addBehaviour(new TickerBehaviour(WallAgent.this, 200) {
+        addBehaviour(new TickerBehaviour(WallAgent.this, 100) {
             @Override
             protected void onTick() {
                 if(panel.hasTronRunner()) {

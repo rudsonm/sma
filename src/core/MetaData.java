@@ -20,10 +20,19 @@ public class MetaData implements Serializable {
     public Dimension battlefieldDimension;
     public int[][] battlefield;
     public Map<AID, Point> positions;
+    private boolean winner = false;
     
     public MetaData(int[][] battlefield, Map<AID, Point> positions, Dimension battlefieldDimension) {
         this.battlefield = battlefield;
         this.positions = positions;
         this.battlefieldDimension = battlefieldDimension;
+    }
+    
+    public void setWinner() {
+        this.winner = true;
+    }
+    
+    public boolean isWinner() {
+        return this.winner;
     }
 }

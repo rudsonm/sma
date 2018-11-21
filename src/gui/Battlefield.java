@@ -20,8 +20,8 @@ import javax.swing.border.Border;
  * @author 5966868
  */
 public class Battlefield extends javax.swing.JFrame implements Serializable {
-    public final Integer LINES = 40;
-    public final Integer COLUMNS = 40;
+    public final Integer LINES = 30;
+    public final Integer COLUMNS = 30;
     
     /**
      * Creates new form Battlefield
@@ -56,7 +56,7 @@ public class Battlefield extends javax.swing.JFrame implements Serializable {
                 
                 this.add(panel, cons);
             }
-        }        
+        }
     }
     
     public void putAgent(Color color, Point point) {        

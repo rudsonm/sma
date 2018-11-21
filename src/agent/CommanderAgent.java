@@ -130,6 +130,8 @@ public class CommanderAgent extends Agent {
                 ACLMessage battlefieldUpdate = new ACLMessage(ACLMessage.INFORM);
                 try {                   
                     MetaData md = new MetaData(battlefieldMatrix, playersPositions, new Dimension(battlefield.LINES, battlefield.COLUMNS));
+                    if(nRunners <= 1)
+                        md.setWinner();
                     battlefieldUpdate.setContentObject(md);
                 } catch (IOException ex) {
 //                    Logger.getLogger(CommanderAgent.class.getName()).log(Level.SEVERE, null, ex);
@@ -141,6 +143,7 @@ public class CommanderAgent extends Agent {
                 
                 if(nRunners <= 1) {
                     CommanderAgent.this.takeDown();
+                    removeBehaviour(this.getParent());
                     return;
                 }
                 

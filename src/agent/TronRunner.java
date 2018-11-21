@@ -95,11 +95,18 @@ public class TronRunner extends Agent {
                 ACLMessage update = blockingReceive(MessageTemplate.MatchPerformative(ACLMessage.INFORM));
                 try {
                     MetaData md = (MetaData) update.getContentObject();                    
+                    if(md.isWinner()) {
+                        System.out.println(getAID().getLocalName() + ": I won!!");
+                        removeBehaviour(this);
+                        takeDown();
+                        return;
+                    } else
+                        System.out.println("Updated battlefield");
+                    
                     battlefield = md.battlefield;
                     fieldDimension = md.battlefieldDimension;
                     positions = md.positions;
-                    
-                    System.out.println("Updated battlefield");
+                    onBattlefieldUpdate();
                 } catch (UnreadableException ex) {
                     Logger.getLogger(TronRunner.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -153,7 +160,7 @@ public class TronRunner extends Agent {
                 break;
             }
             tries++;
-        } while((hasComponent(x, y) || isOutOfBound(x, y)) && tries <= 8);
+        } while((isOutOfBound(x, y) || hasComponent(x, y)) && tries <= 8);
         return move;
     }
     
@@ -179,4 +186,6 @@ public class TronRunner extends Agent {
         }
         System.out.println(str);
     }
+    
+    public void onBattlefieldUpdate() { }
 }
