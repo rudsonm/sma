@@ -99,7 +99,7 @@ public class TronRunner extends Agent {
                         System.out.println(getAID().getLocalName() + ": I won!!");
                         removeBehaviour(this);
                         takeDown();
-                        return;
+                        this.finalize();
                     } else
                         System.out.println("Updated battlefield");
                     
@@ -108,6 +108,8 @@ public class TronRunner extends Agent {
                     positions = md.positions;
                     onBattlefieldUpdate();
                 } catch (UnreadableException ex) {
+                    Logger.getLogger(TronRunner.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Throwable ex) {
                     Logger.getLogger(TronRunner.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
