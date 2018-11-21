@@ -1,10 +1,12 @@
 package core;
 
 
+import gui.Battlefield;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.StaleProxyException;
+import java.awt.Color;
 
 
 public class TronStarter {
@@ -21,9 +23,7 @@ public class TronStarter {
         
 //        container.createNewAgent("rma", "jade.tools.rma.rma", null).start();
         
-        Thread.sleep(3000);
-
+        Thread.sleep(1000);        
         container.createNewAgent("commanderAgent", "agent.CommanderAgent", null).start();
-        
     }
 }

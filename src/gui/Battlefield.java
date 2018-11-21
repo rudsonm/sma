@@ -20,8 +20,8 @@ import javax.swing.border.Border;
  * @author 5966868
  */
 public class Battlefield extends javax.swing.JFrame implements Serializable {
-    private final Integer LINES = 40;
-    private final Integer COLUMNS = 40;
+    public final Integer LINES = 40;
+    public final Integer COLUMNS = 40;
     
     /**
      * Creates new form Battlefield
@@ -49,22 +49,17 @@ public class Battlefield extends javax.swing.JFrame implements Serializable {
             cons.gridx = i;
             for(int j = 0; j < COLUMNS; j++) {
                 cons.gridy = j;
-                                
+                
                 GroundPanel panel = new GroundPanel(Color.BLACK, new GridBagLayout());
                 panel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
                 panel.setSize(WIDTH / COLUMNS, HEIGHT / LINES);                
                 
-                // Setting the Wall Agents
-                if(i == 0 || i == LINES - 1 || j == 0 || j == LINES - 1)
-                    panel.setWallAgent(new WallAgent(panel));
-                
                 this.add(panel, cons);
-                panel.revalidate();
             }
-        }                
+        }
     }
     
-    public void putAgent(TronRunner agent, int team) {
+    public void putAgent(Color color, int team) {
         Point point = null;
         switch(team) {
             case 1:
@@ -78,8 +73,12 @@ public class Battlefield extends javax.swing.JFrame implements Serializable {
             break;
         }
         Component c = this.getComponentAt(point);
-        c.setBackground(agent.color);
-        c.repaint();
+        c.setBackground(color);
+    }
+    
+    @Override
+    public Component getComponentAt(int x, int y) {
+        return this.getRootPane().getContentPane().getComponentAt(x, y);
     }
 
     /**

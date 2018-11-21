@@ -7,49 +7,40 @@ package gui;
 
 import agent.TronRunner;
 import agent.WallAgent;
+import jade.core.AID;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.LayoutManager;
+import java.io.Serializable;
 
 /**
  *
  * @author 09952410905
  */
-public class GroundPanel extends javax.swing.JPanel {
-    
-    private WallAgent wallAgent;
-    private TronRunner runnerAgent;
+public class GroundPanel extends javax.swing.JPanel implements Serializable {
+
+    private AID tronRunner = null;
     
     public GroundPanel(Color color, LayoutManager layout) {        
         this.setBackground(color);
         this.setLayout(layout);
         initComponents();
     }
-
-    public WallAgent getWallAgent() {
-        return wallAgent;
-    }
-
-    public void setWallAgent(WallAgent wallAgent) {
-        this.wallAgent = wallAgent;
-    }
-
-    public TronRunner getRunnerAgent() {
-        return runnerAgent;
-    }
-
-    public void setRunnerAgent(TronRunner runnerAgent) {
-        this.runnerAgent = runnerAgent;
+    
+    public boolean hasTronRunner() {
+        return (tronRunner == null) ? false : true;
     }
     
-    public Container getBattleField() {
-        return this.getParent();
+    public AID getTronRunner() {
+        return this.tronRunner;
     }
     
-    public boolean hasRunnerAgent() {
-        if(this.runnerAgent == null)
-            return false;
-        return true;
+    public void setTronRunner(AID runner) {
+        this.tronRunner = runner;
+    }
+    
+    public void removeTronRunner() {
+        this.tronRunner = null;
     }
 
     /**

@@ -96,7 +96,6 @@ public class TronRunner extends Agent {
                 }
             }
         );
-        
         sequentialBehaviour.addSubBehaviour(new CyclicBehaviour(this) {
             @Override
             public void action() {
@@ -113,7 +112,7 @@ public class TronRunner extends Agent {
                 ACLMessage move = new ACLMessage(ACLMessage.INFORM);
                 move.setContent(nextMove);
                 move.addReceiver(commander);
-                send(move);                
+                send(move);
             }
         });
         
@@ -128,7 +127,7 @@ public class TronRunner extends Agent {
 //            }
 //        );
         
-        this.addBehaviour(sequentialBehaviour);
+        this.addBehaviour(sequentialBehaviour);                
         
 //        addBehaviour(new );
 //        addBehaviour(new CyclicBehaviour() {

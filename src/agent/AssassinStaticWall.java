@@ -14,8 +14,6 @@ import java.awt.Color;
  */
 public class AssassinStaticWall extends WallAgent {
     
-    public AssassinStaticWall(GroundPanel panel) {
-        super(panel);
-    }
+    
     
 }
